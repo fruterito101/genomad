@@ -4,15 +4,27 @@ import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-// Nucleotide colors (ATGC)
-const NUCLEOTIDE_COLORS = {
-  A: '#2ECC71', // Adenina - Verde
-  T: '#E74C3C', // Timina - Rojo  
-  G: '#F1C40F', // Guanina - Amarillo
-  C: '#3498DB', // Citosina - Azul
+// Trait colors matching the app palette
+const TRAIT_COLORS: Record<string, string> = {
+  technical: '#3B82F6',   // Blue
+  creativity: '#EC4899',  // Pink
+  social: '#8B5CF6',      // Purple
+  analysis: '#06B6D4',    // Cyan
+  empathy: '#EF4444',     // Red
+  trading: '#10B981',     // Green
+  teaching: '#F59E0B',    // Amber
+  leadership: '#F97316',  // Orange
 }
 
-const NUCLEOTIDES = ['A', 'T', 'G', 'C'] as const
+// Default nucleotide colors (fallback)
+const NUCLEOTIDE_COLORS = {
+  A: '#2ECC71',
+  T: '#E74C3C',
+  G: '#F1C40F',
+  C: '#3498DB',
+}
+
+const TRAIT_NAMES = Object.keys(TRAIT_COLORS)
 
 interface DNAHelixProps {
   radius?: number
@@ -22,6 +34,9 @@ interface DNAHelixProps {
   rotationSpeed?: number
   strandColor1?: string
   strandColor2?: string
+  // NEW: traits mapping
+  traits?: Record<string, number>
+  highlightDominant?: boolean
 }
 
 export function DNAHelix({ 
@@ -32,15 +47,43 @@ export function DNAHelix({
   rotationSpeed = 0.15,
   strandColor1 = '#4ECDC4',
   strandColor2 = '#FF6B9D',
+  traits,
+  highlightDominant = true,
 }: DNAHelixProps) {
   const groupRef = useRef<THREE.Group>(null)
+  
+  // Sort traits by value to find dominant ones
+  const sortedTraits = useMemo(() => {
+    if (!traits) return TRAIT_NAMES
+    return Object.entries(traits)
+      .sort(([, a], [, b]) => b - a)
+      .map(([name]) => name)
+  }, [traits])
+
+  // Get color for a trait based on its value
+  const getTraitColor = (traitName: string, index: number): string => {
+    if (traits && TRAIT_COLORS[traitName]) {
+      return TRAIT_COLORS[traitName]
+    }
+    // Fallback to nucleotide colors
+    const keys = Object.keys(NUCLEOTIDE_COLORS) as (keyof typeof NUCLEOTIDE_COLORS)[]
+    return NUCLEOTIDE_COLORS[keys[index % 4]]
+  }
+
+  // Get emissive intensity based on trait value (higher = brighter)
+  const getEmissiveIntensity = (traitName: string): number => {
+    if (!traits || !highlightDominant) return 0.6
+    const value = traits[traitName] || 50
+    // Scale from 0.3 to 1.0 based on value (0-100)
+    return 0.3 + (value / 100) * 0.7
+  }
   
   // Generate helix points
   const { strand1Points, strand2Points, basePairs } = useMemo(() => {
     const totalPoints = Math.floor(turns * pointsPerTurn)
     const strand1: THREE.Vector3[] = []
     const strand2: THREE.Vector3[] = []
-    const pairs: { start: THREE.Vector3; end: THREE.Vector3; color: string }[] = []
+    const pairs: { start: THREE.Vector3; end: THREE.Vector3; traitName: string; index: number }[] = []
     
     for (let i = 0; i < totalPoints; i++) {
       const t = i / totalPoints
@@ -57,19 +100,21 @@ export function DNAHelix({
       const z2 = Math.sin(angle + Math.PI) * radius
       strand2.push(new THREE.Vector3(x2, y, z2))
       
-      // Base pairs (connecting rungs)
+      // Base pairs - map to traits
       if (i % 2 === 0) {
-        const nucleotide = NUCLEOTIDES[i % 4]
+        const traitIndex = Math.floor(i / 2) % sortedTraits.length
+        const traitName = sortedTraits[traitIndex]
         pairs.push({
           start: new THREE.Vector3(x1, y, z1),
           end: new THREE.Vector3(x2, y, z2),
-          color: NUCLEOTIDE_COLORS[nucleotide],
+          traitName,
+          index: i,
         })
       }
     }
     
     return { strand1Points: strand1, strand2Points: strand2, basePairs: pairs }
-  }, [radius, height, turns, pointsPerTurn])
+  }, [radius, height, turns, pointsPerTurn, sortedTraits])
 
   // Create tube geometry from points
   const strand1Geometry = useMemo(() => {
@@ -104,7 +149,6 @@ export function DNAHelix({
           iridescence={1}
           iridescenceIOR={1.5}
           iridescenceThicknessRange={[100, 400]}
-          envMapIntensity={1}
           transparent
           opacity={0.95}
         />
@@ -123,18 +167,20 @@ export function DNAHelix({
           iridescence={1}
           iridescenceIOR={1.5}
           iridescenceThicknessRange={[100, 400]}
-          envMapIntensity={1}
           transparent
           opacity={0.95}
         />
       </mesh>
       
-      {/* Base pairs (rungs) with nucleotide spheres */}
+      {/* Base pairs with trait-based colors */}
       {basePairs.map((pair, i) => {
         const midpoint = pair.start.clone().lerp(pair.end, 0.5)
         const direction = pair.end.clone().sub(pair.start).normalize()
         const quaternion = new THREE.Quaternion()
         quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction)
+        
+        const color = getTraitColor(pair.traitName, pair.index)
+        const emissiveIntensity = getEmissiveIntensity(pair.traitName)
         
         return (
           <group key={i}>
@@ -142,9 +188,9 @@ export function DNAHelix({
             <mesh position={midpoint} quaternion={quaternion}>
               <cylinderGeometry args={[0.05, 0.05, pair.start.distanceTo(pair.end), 8]} />
               <meshPhysicalMaterial 
-                color={pair.color}
-                emissive={pair.color}
-                emissiveIntensity={0.6}
+                color={color}
+                emissive={color}
+                emissiveIntensity={emissiveIntensity}
                 metalness={0.7}
                 roughness={0.2}
                 clearcoat={0.5}
@@ -155,9 +201,9 @@ export function DNAHelix({
             <mesh position={pair.start}>
               <sphereGeometry args={[0.12, 16, 16]} />
               <meshPhysicalMaterial 
-                color={pair.color}
-                emissive={pair.color}
-                emissiveIntensity={0.8}
+                color={color}
+                emissive={color}
+                emissiveIntensity={emissiveIntensity + 0.2}
                 metalness={0.5}
                 roughness={0.1}
                 clearcoat={1}
@@ -170,9 +216,9 @@ export function DNAHelix({
             <mesh position={pair.end}>
               <sphereGeometry args={[0.12, 16, 16]} />
               <meshPhysicalMaterial 
-                color={pair.color}
-                emissive={pair.color}
-                emissiveIntensity={0.8}
+                color={color}
+                emissive={color}
+                emissiveIntensity={emissiveIntensity + 0.2}
                 metalness={0.5}
                 roughness={0.1}
                 clearcoat={1}
