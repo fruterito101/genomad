@@ -3,6 +3,7 @@
 
 import { motion } from "framer-motion";
 import { Button, Card, Badge } from "@/components/ui";
+import { DNAScene } from "@/components/three"
 import { Check, Sparkles, Dna } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -112,19 +113,8 @@ export function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Card className="aspect-video overflow-hidden p-0">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              >
-                <source 
-                  src="https://res.cloudinary.com/ddejtxqjq/video/upload/v1771212418/GMD_zqv1gd.mp4" 
-                  type="video/mp4" 
-                />
-              </video>
+            <Card className="aspect-video overflow-hidden p-0 bg-background/50">
+              <DNAScene className="w-full h-full" />
             </Card>
 
             {/* Floating stats */}
