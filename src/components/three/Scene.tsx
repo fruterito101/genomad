@@ -1,9 +1,9 @@
 'use client'
 
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Suspense } from 'react'
-import * as THREE from 'three'
 
 interface SceneProps {
   children?: React.ReactNode
@@ -12,6 +12,8 @@ interface SceneProps {
   fogColor?: string
   fogNear?: number
   fogFar?: number
+  enableBloom?: boolean
+  bloomIntensity?: number
 }
 
 export function Scene({ 
@@ -20,7 +22,9 @@ export function Scene({
   enableFog = true,
   fogColor = '#0A0A0F',
   fogNear = 5,
-  fogFar = 25
+  fogFar = 25,
+  enableBloom = true,
+  bloomIntensity = 0.5,
 }: SceneProps) {
   return (
     <div className={className}>
@@ -77,6 +81,18 @@ export function Scene({
           />
           
           {children}
+          
+          {/* Postprocessing - Bloom */}
+          {enableBloom && (
+            <EffectComposer>
+              <Bloom 
+                intensity={bloomIntensity}
+                luminanceThreshold={0.2}
+                luminanceSmoothing={0.9}
+                mipmapBlur
+              />
+            </EffectComposer>
+          )}
         </Suspense>
       </Canvas>
     </div>
