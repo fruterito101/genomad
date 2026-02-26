@@ -74,12 +74,12 @@ export function DNAHelix({
   // Create tube geometry from points
   const strand1Geometry = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3(strand1Points)
-    return new THREE.TubeGeometry(curve, 64, 0.08, 8, false)
+    return new THREE.TubeGeometry(curve, 64, 0.1, 12, false)
   }, [strand1Points])
 
   const strand2Geometry = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3(strand2Points)
-    return new THREE.TubeGeometry(curve, 64, 0.08, 8, false)
+    return new THREE.TubeGeometry(curve, 64, 0.1, 12, false)
   }, [strand2Points])
   
   // Animation
@@ -91,25 +91,41 @@ export function DNAHelix({
 
   return (
     <group ref={groupRef}>
-      {/* Strand 1 */}
+      {/* Strand 1 - Iridescent material */}
       <mesh geometry={strand1Geometry}>
-        <meshStandardMaterial 
-          color={strandColor1} 
+        <meshPhysicalMaterial 
+          color={strandColor1}
           emissive={strandColor1}
-          emissiveIntensity={0.2}
-          metalness={0.3}
-          roughness={0.4}
+          emissiveIntensity={0.4}
+          metalness={0.9}
+          roughness={0.1}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          iridescence={1}
+          iridescenceIOR={1.5}
+          iridescenceThicknessRange={[100, 400]}
+          envMapIntensity={1}
+          transparent
+          opacity={0.95}
         />
       </mesh>
       
-      {/* Strand 2 */}
+      {/* Strand 2 - Iridescent material */}
       <mesh geometry={strand2Geometry}>
-        <meshStandardMaterial 
+        <meshPhysicalMaterial 
           color={strandColor2}
           emissive={strandColor2}
-          emissiveIntensity={0.2}
-          metalness={0.3}
-          roughness={0.4}
+          emissiveIntensity={0.4}
+          metalness={0.9}
+          roughness={0.1}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          iridescence={1}
+          iridescenceIOR={1.5}
+          iridescenceThicknessRange={[100, 400]}
+          envMapIntensity={1}
+          transparent
+          opacity={0.95}
         />
       </mesh>
       
@@ -124,31 +140,44 @@ export function DNAHelix({
           <group key={i}>
             {/* Connecting rung */}
             <mesh position={midpoint} quaternion={quaternion}>
-              <cylinderGeometry args={[0.04, 0.04, pair.start.distanceTo(pair.end), 8]} />
-              <meshStandardMaterial 
+              <cylinderGeometry args={[0.05, 0.05, pair.start.distanceTo(pair.end), 8]} />
+              <meshPhysicalMaterial 
                 color={pair.color}
                 emissive={pair.color}
-                emissiveIntensity={0.3}
+                emissiveIntensity={0.6}
+                metalness={0.7}
+                roughness={0.2}
+                clearcoat={0.5}
               />
             </mesh>
             
             {/* Nucleotide sphere 1 */}
             <mesh position={pair.start}>
-              <sphereGeometry args={[0.1, 16, 16]} />
-              <meshStandardMaterial 
+              <sphereGeometry args={[0.12, 16, 16]} />
+              <meshPhysicalMaterial 
                 color={pair.color}
                 emissive={pair.color}
-                emissiveIntensity={0.5}
+                emissiveIntensity={0.8}
+                metalness={0.5}
+                roughness={0.1}
+                clearcoat={1}
+                transparent
+                opacity={0.9}
               />
             </mesh>
             
             {/* Nucleotide sphere 2 */}
             <mesh position={pair.end}>
-              <sphereGeometry args={[0.1, 16, 16]} />
-              <meshStandardMaterial 
+              <sphereGeometry args={[0.12, 16, 16]} />
+              <meshPhysicalMaterial 
                 color={pair.color}
                 emissive={pair.color}
-                emissiveIntensity={0.5}
+                emissiveIntensity={0.8}
+                metalness={0.5}
+                roughness={0.1}
+                clearcoat={1}
+                transparent
+                opacity={0.9}
               />
             </mesh>
           </group>
