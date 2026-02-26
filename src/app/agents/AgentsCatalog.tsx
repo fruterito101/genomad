@@ -26,7 +26,7 @@ interface Props {
   initialAgents: unknown[];
 }
 
-const traitConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
+const traitConfig: Record<string, { icon: typeof Cpu; color: string; label: string }> = {
   technical: { icon: Cpu, color: "#3B82F6", label: "Técnico" },
   creativity: { icon: Palette, color: "#EC4899", label: "Creativo" },
   social: { icon: MessageSquare, color: "#8B5CF6", label: "Social" },

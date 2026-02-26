@@ -52,7 +52,7 @@ interface AgentCardProps {
   }
 }
 
-const traitIcons: Record<string, React.ElementType> = {
+const traitIcons: Record<string, typeof Cpu> = {
   technical: Cpu, creativity: Palette, social: MessageSquare, analysis: Brain,
   empathy: Heart, trading: TrendingUp, teaching: GraduationCap, leadership: Crown,
 }
@@ -126,7 +126,7 @@ export function AgentCard({
             {topTrait && (
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-6 w-6 rounded-md flex items-center justify-center" style={{ backgroundColor: `${topColor}20` }}>
-                  <TopIcon className="h-3.5 w-3.5" style={{ color: topColor }} />
+                  <TopIcon className="h-3.5 w-3.5" color={topColor} />
                 </div>
                 <div className="flex-1">
                   <div className="h-1.5 rounded-full bg-muted overflow-hidden">

@@ -56,7 +56,7 @@ export function AgentDetailModal({ agent, isOpen, onClose, onAgentUpdated, getAc
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
 
-  const traitConfig: Record<string, { icon: React.ElementType; color: string; labelKey: string }> = {
+  const traitConfig: Record<string, { icon: typeof Cpu; color: string; labelKey: string }> = {
     technical: { icon: Cpu, color: "#3B82F6", labelKey: "dashboard.traits.technical" },
     creativity: { icon: Palette, color: "#EC4899", labelKey: "dashboard.traits.creativity" },
     social: { icon: MessageSquare, color: "#8B5CF6", labelKey: "dashboard.traits.social" },
@@ -294,11 +294,11 @@ export function AgentDetailModal({ agent, isOpen, onClose, onAgentUpdated, getAc
                   const safeValue = typeof value === "number" ? value : 50;
                   return (
                     <motion.div key={key} className="p-3 rounded-xl flex items-center gap-3 bg-muted" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}>
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${config.color}20` }}><Icon className="w-5 h-5" style={{ color: config.color }} /></div>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${config.color}20` }}><Icon className="w-5 h-5" color={config.color} /></div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-sm font-medium">{t(config.labelKey)}</span>
-                          <span className="text-sm font-bold" style={{ color: config.color }}>{safeValue}</span>
+                          <span className="text-sm font-bold" color={config.color}>{safeValue}</span>
                         </div>
                         <div className="h-2 rounded-full bg-background"><motion.div className="h-full rounded-full" style={{ backgroundColor: config.color }} initial={{ width: 0 }} animate={{ width: `${safeValue}%` }} transition={{ duration: 0.5, delay: index * 0.05 }} /></div>
                       </div>

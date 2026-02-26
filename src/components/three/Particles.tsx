@@ -2,7 +2,7 @@
 
 import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
-import type { Points } from 'three'
+import * as THREE from 'three'
 
 interface ParticlesProps {
   count?: number
@@ -10,7 +10,7 @@ interface ParticlesProps {
 }
 
 export function Particles({ count = 200, spread = 10 }: ParticlesProps) {
-  const pointsRef = useRef<Points>(null)
+  const pointsRef = useRef<THREE.Points>(null)
   
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3)
@@ -33,9 +33,7 @@ export function Particles({ count = 200, spread = 10 }: ParticlesProps) {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          array={positions}
-          count={count}
-          itemSize={3}
+          args={[positions, 3]}
         />
       </bufferGeometry>
       <pointsMaterial size={0.05} color="#FF6B9D" transparent opacity={0.8} />

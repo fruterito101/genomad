@@ -30,7 +30,7 @@ interface LeaderboardTableProps {
   onAgentClick?: (agent: Agent) => void
 }
 
-const traitConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
+const traitConfig: Record<string, { icon: typeof Cpu; color: string; label: string }> = {
   technical: { icon: Cpu, color: "#3B82F6", label: "Technical" },
   creativity: { icon: Palette, color: "#EC4899", label: "Creative" },
   social: { icon: MessageSquare, color: "#8B5CF6", label: "Social" },
@@ -130,8 +130,8 @@ export function LeaderboardTable({ agents, onAgentClick }: LeaderboardTableProps
               <TableCell>
                 {topTrait && TraitIcon && (
                   <div className="flex items-center gap-2">
-                    <TraitIcon className="h-4 w-4" style={{ color: topTrait.color }} />
-                    <span className="text-sm" style={{ color: topTrait.color }}>
+                    <TraitIcon className="h-4 w-4" color={topTrait.color} />
+                    <span className="text-sm" color={topTrait.color}>
                       {topTrait.label}
                     </span>
                     <span className="text-xs text-muted-foreground">

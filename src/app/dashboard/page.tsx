@@ -169,7 +169,7 @@ export default function DashboardPage() {
                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center mb-3 sm:mb-4"
                     style={{ backgroundColor: `${feature.color}20` }}
                   >
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: feature.color }} />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" color={feature.color} />
                   </div>
                   <h3 className="text-base sm:text-lg font-bold mb-1 sm:mb-2">{isEs ? feature.titleEs : feature.title}</h3>
                   <p className="text-sm text-muted-foreground">{isEs ? feature.descEs : feature.desc}</p>
