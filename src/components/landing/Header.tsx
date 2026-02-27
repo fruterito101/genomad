@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui";
 import { useTranslation } from "react-i18next";
-import { Menu, X, Dna } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export function Header() {
   const { t, i18n } = useTranslation();
@@ -64,11 +64,15 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Dna className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-lg">Genomad</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="https://res.cloudinary.com/dwqqk1pzk/image/upload/v1772169729/Genomad-logo-wh_fphexg.png"
+              alt="Genomad"
+              width={140}
+              height={40}
+              className="h-8 sm:h-10 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
